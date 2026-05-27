@@ -109,7 +109,7 @@ if (contactForm) {
         if (!formData.message) errors.push('Message is required');
         
         // Email validation using standard pattern
-        if (formData.email && !/^[^\s@]+@[^\s@.]+\.[^\s@.]+$/.test(formData.email)) {
+        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
             errors.push('Please enter a valid email address');
         }
         
@@ -143,20 +143,26 @@ document.querySelectorAll('.skill-tag').forEach(tag => {
     });
 });
 
-// Counter animation for stats
-const animateCounter = (element, target, duration = 2000) => {
-    let current = 0;
-    const increment = target / (duration / 16);
+// Counter animation for stats with proper timing and suffix handling
+const animateCounter = (element, target, suffix = '') => {
+    const duration = 2000;
+    const startTime = performance.now();
     
-    const timer = setInterval(() => {
-        current += increment;
-        if (current >= target) {
-            element.textContent = target;
-            clearInterval(timer);
+    const animate = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const current = Math.floor(target * progress);
+        
+        element.textContent = current + suffix;
+        
+        if (progress < 1) {
+            requestAnimationFrame(animate);
         } else {
-            element.textContent = Math.floor(current);
+            element.textContent = target + suffix;
         }
-    }, 16);
+    };
+    
+    requestAnimationFrame(animate);
 };
 
 // Trigger counter animation when stat boxes come into view
@@ -165,8 +171,10 @@ const statObserver = new IntersectionObserver((entries) => {
         if (entry.isIntersecting && !entry.target.hasAttribute('data-animated')) {
             const statNumber = entry.target.querySelector('.stat-number');
             if (statNumber) {
-                const target = parseInt(statNumber.textContent);
-                animateCounter(statNumber, target);
+                const text = statNumber.textContent;
+                const numericValue = parseInt(text.match(/\d+/)?.[0] || '0');
+                const suffix = text.replace(/\d/g, '');
+                animateCounter(statNumber, numericValue, suffix);
                 entry.target.setAttribute('data-animated', 'true');
             }
         }
