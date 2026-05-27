@@ -108,8 +108,9 @@ if (contactForm) {
         if (!formData.subject) errors.push('Subject is required');
         if (!formData.message) errors.push('Message is required');
         
-        // Email validation using standard pattern
-        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        // Email validation - check both HTML5 type validation and JS pattern
+        // This regex validates basic email format: localpart@domain.extension
+        if (formData.email && !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(formData.email)) {
             errors.push('Please enter a valid email address');
         }
         
@@ -172,7 +173,7 @@ const statObserver = new IntersectionObserver((entries) => {
             const statNumber = entry.target.querySelector('.stat-number');
             if (statNumber) {
                 const text = statNumber.textContent;
-                const numericValue = parseInt(text.match(/\d+/)?.[0] || '0');
+                const numericValue = parseInt(text.match(/\d+/)?.[0] || '0', 10);
                 const suffix = text.replace(/\d/g, '');
                 animateCounter(statNumber, numericValue, suffix);
                 entry.target.setAttribute('data-animated', 'true');
