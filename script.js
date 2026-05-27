@@ -5,7 +5,7 @@ const navLinks = document.querySelectorAll('.nav-link');
 
 hamburger?.addEventListener('click', () => {
     hamburger.classList.toggle('active');
-    navMenu.classList.toggle('active');
+    navMenu?.classList.toggle('active');
 });
 
 // Close mobile menu when a link is clicked
@@ -72,35 +72,60 @@ document.querySelectorAll('.service-card, .experience-item, .project-card, .test
 
 // Contact Form Handling
 const contactForm = document.getElementById('contactForm');
+const errorContainer = document.createElement('div');
+errorContainer.id = 'form-errors';
+errorContainer.style.display = 'none';
+errorContainer.style.padding = '1rem';
+errorContainer.style.marginBottom = '1rem';
+errorContainer.style.background = '#fee';
+errorContainer.style.border = '1px solid #fcc';
+errorContainer.style.borderRadius = '8px';
+errorContainer.style.color = '#c33';
+
 if (contactForm) {
+    contactForm.parentNode.insertBefore(errorContainer, contactForm);
+    
     contactForm.addEventListener('submit', function(e) {
         e.preventDefault();
+        errorContainer.style.display = 'none';
+        errorContainer.innerHTML = '';
         
         // Get form values
         const formData = {
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            company: document.getElementById('company').value,
+            name: document.getElementById('name').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            company: document.getElementById('company').value.trim(),
             subject: document.getElementById('subject').value,
-            message: document.getElementById('message').value
+            message: document.getElementById('message').value.trim()
         };
         
+        const errors = [];
+        
         // Validate form
-        if (!formData.name || !formData.email || !formData.subject || !formData.message) {
-            alert('Please fill in all required fields.');
-            return;
+        if (!formData.name) errors.push('Name is required');
+        if (!formData.email) errors.push('Email is required');
+        if (!formData.subject) errors.push('Subject is required');
+        if (!formData.message) errors.push('Message is required');
+        
+        // Email validation using standard pattern
+        if (formData.email && !formData.email.includes('@')) {
+            errors.push('Please enter a valid email address');
         }
         
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(formData.email)) {
-            alert('Please enter a valid email address.');
+        if (errors.length > 0) {
+            errorContainer.innerHTML = '<strong>Please fix the following errors:</strong><ul style="margin: 0.5rem 0 0 1.5rem;">' + 
+                errors.map(e => `<li>${e}</li>`).join('') + '</ul>';
+            errorContainer.style.display = 'block';
             return;
         }
         
         // Show success message
-        alert('Thank you for your message! I will get back to you soon.');
+        errorContainer.style.background = '#efe';
+        errorContainer.style.border = '1px solid #cfc';
+        errorContainer.style.color = '#3c3';
+        errorContainer.innerHTML = '<strong>Thank you!</strong> Your message has been received. I will get back to you soon.';
+        errorContainer.style.display = 'block';
         contactForm.reset();
         
         // In a production environment, you would send this data to a server
@@ -169,7 +194,7 @@ window.addEventListener('scroll', () => {
     sections.forEach(section => {
         const sectionTop = section.offsetTop;
         const sectionHeight = section.clientHeight;
-        if (scrollY >= (sectionTop - 200)) {
+        if (window.scrollY >= (sectionTop - 200)) {
             current = section.getAttribute('id');
         }
     });
