@@ -11,8 +11,8 @@ hamburger?.addEventListener('click', () => {
 // Close mobile menu when a link is clicked
 navLinks.forEach(link => {
     link.addEventListener('click', () => {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
+        hamburger?.classList.remove('active');
+        navMenu?.classList.remove('active');
     });
 });
 
@@ -109,7 +109,7 @@ if (contactForm) {
         if (!formData.message) errors.push('Message is required');
         
         // Email validation using standard pattern
-        if (formData.email && !formData.email.includes('@')) {
+        if (formData.email && !/^[^\s@]+@[^\s@.]+\.[^\s@.]+$/.test(formData.email)) {
             errors.push('Please enter a valid email address');
         }
         
