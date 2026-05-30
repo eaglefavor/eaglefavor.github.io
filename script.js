@@ -1,10 +1,19 @@
-// Mobile Menu Infrastructure
+// Mobile Navigation Infrastructure
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
+const navLinks = document.querySelectorAll('.nav-link');
 
 hamburger?.addEventListener('click', () => {
     hamburger.classList.toggle('active');
     navMenu?.classList.toggle('active');
+});
+
+// Close Mobile Overlay When a Navigation Target is Tapped
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        hamburger?.classList.remove('active');
+        navMenu?.classList.remove('active');
+    });
 });
 
 // Smooth Scroll Setup for Anchor Targets
@@ -21,24 +30,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Subtle Element Reveal Observer
-const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-        }
-    });
-}, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
-
-document.querySelectorAll('.service-card, .experience-item, .project-card, .stat-box').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(16px)';
-    el.style.transition = 'opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)';
-    revealObserver.observe(el);
-});
-
-// Dynamic Number Ticker Animation
+// Clean Dynamic Elements Counter Animation
 const runCounterAnimation = (element, target, suffix = '') => {
     const duration = 1600;
     const startTime = performance.now();
@@ -46,7 +38,6 @@ const runCounterAnimation = (element, target, suffix = '') => {
     const update = (currentTime) => {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        // Easing function outQuad
         const easeProgress = progress * (2 - progress);
         const currentVal = Math.floor(target * easeProgress);
         
@@ -74,6 +65,14 @@ const metricObserver = new IntersectionObserver((entries) => {
             }
         }
     });
-}, { threshold: 0.2 });
+}, { threshold: 0.15 });
 
 document.querySelectorAll('.stat-box').forEach(box => metricObserver.observe(box));
+
+// Handle Keyboard Escape Commands to Dismiss Mobile Drawer
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        hamburger?.classList.remove('active');
+        navMenu?.classList.remove('active');
+    }
+});
